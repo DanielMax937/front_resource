@@ -1,0 +1,40 @@
+{
+    "extends": "./tsconfig.extend",
+    "compilerOptions": {
+      "target": "es2017",
+      "lib": [
+        "dom",
+        "dom.iterable",
+        "esnext",
+        "scripthost"
+      ],
+      "allowJs": true,
+      "skipLibCheck": true,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "strict": true,
+      "forceConsistentCasingInFileNames": true,
+      "module": "esnext",
+      "moduleResolution": "node",
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "noEmit": true,
+      "jsx": "react",
+      "baseUrl": "src",
+      "pretty": true,
+      "noUnusedLocals": false,
+      "noUnusedParameters": false,
+      "noImplicitAny": true,
+      "noImplicitThis": true,
+      "noFallthroughCasesInSwitch": true
+    },
+    "exclude": [
+      "src/api/*",
+      "node_modules",
+      "craco.config.js"
+    ],
+    "include": [
+      "*.ts"
+    ]
+  }
+  

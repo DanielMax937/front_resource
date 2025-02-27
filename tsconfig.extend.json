@@ -1,0 +1,48 @@
+{
+    "compilerOptions": {
+      "paths": {
+        "@constants/*": [
+          "constants/*"
+        ],
+        "@api/*": [
+          "api/*"
+        ],
+        "@useHooks/*": [
+          "useHooks/*"
+        ],
+        "@services/*": [
+          "services/*"
+        ],
+        "@utils/*": [
+          "utils/*"
+        ],
+        "@styles/*": [
+          "styles/*"
+        ],
+        "@assets/*": [
+          "assets/*"
+        ],
+        "@locales/*": [
+          "locales/*"
+        ],
+        "@components/*": [
+          "components/*"
+        ],
+        "@pages/*": [
+          "pages/*"
+        ],
+        "@views/*": [
+          "views/*"
+        ],
+        "@shared/*": [
+          "containers/shared/*"
+        ],
+        "@stores/*": [
+          "stores/*"
+        ],
+        "@generated/*": [
+          "generated/*"
+        ]
+      }
+    }
+  }
