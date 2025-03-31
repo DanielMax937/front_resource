@@ -64,3 +64,13 @@
 ## Fiber
 1. React15及之前，Reconciler采样递归的方式创建虚拟DOM，递归过程不能中断，如果层级深，那么递归会占用线程很多时间，造成卡顿
 2. React16采用异步的可中断的更新，原先的虚拟DOM已经无法满足需求，所以采用了Fiber
+3. 16之前的是stack Reconciler, 16之后的是Fiber Reconciler
+4. 作为静态数据，每个Fiber对应一个React Element, 作为动态数据，Fiber保存了本次更新中该组件改变的状态，要执行的工作等等
+5. Fiber属性分成三种
+    + 作为静态数据结构的属性
+    + 用于连接其他Fiber节点形成的Fiber
+    + 作为动态的工作单元属性
+
+
+
+> 这里需要提一下，为什么父级指针叫做return而不是parent或者father呢？因为作为一个工作单元，return指节点执行完> completeWork（本章后面会介绍）后会返回的下一个节点。子Fiber节点及其兄弟节点完成工作后会返回其父级节点，所以用return指代父级节点。
