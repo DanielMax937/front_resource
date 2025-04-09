@@ -69,8 +69,24 @@
 5. Fiber属性分成三种
     + 作为静态数据结构的属性
     + 用于连接其他Fiber节点形成的Fiber
-    + 作为动态的工作单元属性
+    + 作为动态的工作单元属性(调度优先级相关lanes， childLanes)
 
 
 
 > 这里需要提一下，为什么父级指针叫做return而不是parent或者father呢？因为作为一个工作单元，return指节点执行完> completeWork（本章后面会介绍）后会返回的下一个节点。子Fiber节点及其兄弟节点完成工作后会返回其父级节点，所以用return指代父级节点。
+
+## 双缓存
+当我们用canvas绘制动画，每一帧绘制前都会调用ctx.clearRect清除上一帧的画面。
+如果当前帧画面计算量比较大，导致清除上一帧画面到绘制当前帧画面之间有较长间隙，就会出现白屏。
+为了解决这个问题，我们可以在内存中绘制当前帧动画，绘制完毕后直接用当前帧替换上一帧画面，由于省去了两帧替换间的计算时间，不会出现从白屏到出现画面的闪烁情况。
+这种在内存中构建并直接替换的技术叫做双缓存。
+React使用“双缓存”来完成Fiber树的构建与替换——对应着DOM树的创建与更新。
+
+## Fiber树
+1. React中最多同时存在两颗Fiber树，显示在屏幕上叫current Fiber，在内存中构建的叫workInProgress Fiber
+2. current Fiber树中的节点叫做current fiber，workInProgress Fiber树中的节点叫做workInProgress fiber.  他们两个alternate互相连接
+```js
+currentFiber.alternate === workInProgressFiber;
+workInProgressFiber.alternate === currentFiber;
+```
+3. React应用根节点通过current指针在不同Fiber树切换，即当workInProgress Fiber树构建完成交给Renderer渲染在页面上后，应用根节点的current指针指向workInProgress Fiber树，此时workInProgress Fiber树就变为current Fiber树。
