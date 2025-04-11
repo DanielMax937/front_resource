@@ -137,4 +137,53 @@ performUnitOfWork方法会创建下一个Fiber节点并赋值给workInProgress�
 如果不存在兄弟Fiber，会进入父级Fiber的“归”阶段。
 “递”和“归”阶段会交错执行直到“归”到rootFiber。至此，render阶段的工作就结束了。
 
+## beginWork
+beginWork的工作是传入当前Fiber节点，创建子Fiber节点
+```javascript
+unction beginWork(
+  current: Fiber | null,
+  workInProgress: Fiber,
+  renderLanes: Lanes
+): Fiber | null {
+  // update时：如果current存在可能存在优化路径，可以复用current（即上一次更新的Fiber节点）
+  if (current !== null) {
+    // ...省略
 
+    // 复用current
+    return bailoutOnAlreadyFinishedWork(current, workInProgress, renderLanes);
+  } else {
+    didReceiveUpdate = false;
+  }
+
+  // mount时：根据tag不同，创建不同的子Fiber节点
+  switch (workInProgress.tag) {
+    case IndeterminateComponent:
+    // ...省略
+    case LazyComponent:
+    // ...省略
+    case FunctionComponent:
+    // ...省略
+    case ClassComponent:
+    // ...省略
+    case HostRoot:
+    // ...省略
+    case HostComponent:
+    // ...省略
+    case HostText:
+    // ...省略
+    // ...省略其他类型
+  }
+}
+```
+其中传参：
+1. current：当前组件对应的Fiber节点在上一次更新时的Fiber节点，即workInProgress.alternate
+2. workInProgress：当前组件对应的Fiber节点
+3. renderLanes：优先级相关，在讲解Scheduler时再讲解
+
+从双缓存机制一节我们知道，除rootFiber以外， 组件mount时，由于是首次渲染，是不存在当前组件对应的Fiber节点在上一次更新时的Fiber节点，即mount时current === null。
+组件update时，由于之前已经mount过，所以current !== null。
+所以我们可以通过current === null ?来区分组件是处于mount还是update。
+
+基于此原因，beginWork的工作可以分为两部分：
+update时：如果current存在，在满足一定条件时可以复用current节点，这样就能克隆current.child作为workInProgress.child，而不需要新建workInProgress.child。
+mount时：除fiberRootNode以外，current === null。会根据fiber.tag不同，创建不同类型的子Fiber节点

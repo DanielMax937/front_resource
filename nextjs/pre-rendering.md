@@ -17,3 +17,20 @@ getStaticPaths 只允许在page中被export
 ### 服务器端渲染
 服务器端渲染是在每次请求时生成HTML文件，这样可以根据请求的参数动态生成页面。这个是每次请求都生成。发生在请求时
 
+## 过程
+
+### 场景
+1. For dynamic routes (e.g., [id].js), you can use both getStaticPaths and getStaticProps to pre-render the dynamic routes at build time.
+    •	getStaticPaths generates all possible paths that need to be statically generated (e.g., all posts with a unique id).
+    •	getStaticProps fetches the data for each specific post.
+
+### 过程
+1.	Build Time: During the build phase, Next.js will run getStaticProps (and getStaticPaths for dynamic routes) to fetch any necessary data.
+2.	HTML Generation: Once the data is fetched, Next.js will generate the static HTML for the page and save it to the disk.
+3.	Serving the Page: When a user visits the page, Next.js serves the pre-rendered HTML directly from the server or CDN, making the page load almost instantly.
+
+### 其他
+If your content changes frequently and needs to be generated on each request, SSR might be a better choice. 
+
+
+
