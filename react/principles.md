@@ -187,3 +187,8 @@ unction beginWork(
 基于此原因，beginWork的工作可以分为两部分：
 update时：如果current存在，在满足一定条件时可以复用current节点，这样就能克隆current.child作为workInProgress.child，而不需要新建workInProgress.child。
 mount时：除fiberRootNode以外，current === null。会根据fiber.tag不同，创建不同类型的子Fiber节点
+
+## update过程
+什么样的条件可以直接复用前一次更新的子Fiber，不需要新建子Fiber
+1. oldProps === newProps && workInProgress.type === current.type，即props与fiber.type不变
+2. !includesSomeLane(renderLanes, updateLanes)，即当前Fiber节点优先级不够，
