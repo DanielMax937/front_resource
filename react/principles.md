@@ -192,3 +192,6 @@ mount时：除fiberRootNode以外，current === null。会根据fiber.tag不同�
 什么样的条件可以直接复用前一次更新的子Fiber，不需要新建子Fiber
 1. oldProps === newProps && workInProgress.type === current.type，即props与fiber.type不变
 2. !includesSomeLane(renderLanes, updateLanes)，即当前Fiber节点优先级不够，
+
+## mount过程
+如果不满足优化路径，进入到新建子Fbier过程，常见的FunctionComponent/ClassComponent/HostComponent/HostText 最终会进入到reconcilChildren方法
