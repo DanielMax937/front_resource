@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QuickSort Partition Visualization</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    .array {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .item {
+      width: 40px;
+      height: 40px;
+      background: #eee;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.4s ease;
+      font-weight: bold;
+      position: relative;
+    }
+    .pivot {
+      background: #ffa;
+      border-color: #f90;
+    }
+    .comparing {
+      background: #acf;
+    }
+    .swapping {
+      background: #f88;
+    }
+  </style>
+</head>
+<body>
+
+<h1>QuickSort Partition 动画</h1>
+<div class="array" id="array"></div>
+<button onclick="startPartition()">开始 Partition</button>
+
+<script>
+  const nums = [5, 3, 8, 4, 2, 7, 1, 6];
+  const arrayEl = document.getElementById('array');
+
+  function render(arr, pivotIndex = null, comparingIndex = null, swappingIndex = null) {
+    arrayEl.innerHTML = '';
+    arr.forEach((num, index) => {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.textContent = num;
+      if (index === pivotIndex) div.classList.add('pivot');
+      if (index === comparingIndex) div.classList.add('comparing');
+      if (index === swappingIndex) div.classList.add('swapping');
+      arrayEl.appendChild(div);
+    });
+  }
+
+  async function startPartition() {
+    const arr = [...nums];
+    const pivot = arr[arr.length - 1];
+    let i = 0;
+    render(arr, arr.length - 1);
+
+    for (let j = 0; j < arr.length - 1; j++) {
+      await sleep(800);
+      render(arr, arr.length - 1, j);
+
+      if (arr[j] < pivot) {
+        await sleep(800);
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+        render(arr, arr.length - 1, j, i);
+        await sleep(800);
+        i++;
+      }
+    }
+
+    await sleep(800);
+    [arr[i], arr[arr.length - 1]] = [arr[arr.length - 1], arr[i]];
+    render(arr, i);
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // 初始渲染
+  render(nums);
+</script>
+
+</body>
+</html>

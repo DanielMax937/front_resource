@@ -195,3 +195,38 @@ mount时：除fiberRootNode以外，current === null。会根据fiber.tag不同�
 
 ## mount过程
 如果不满足优化路径，进入到新建子Fbier过程，常见的FunctionComponent/ClassComponent/HostComponent/HostText 最终会进入到reconcilChildren方法
+
+## reconcileChildren
+1. 对于mount的组件，他会创建新的子Fiber节点
+2. 对于update的组件，他会将当前组件与该组件在上次更新时对应的Fiber节点比较（也就是俗称的Diff算法），将比较的结果生成新Fiber节点
+
+不论走哪个逻辑，最终他会生成新的子Fiber节点并赋值给workInProgress.child，作为本次beginWork返回值，并作为下次performUnitOfWork执行时workInProgress的传参。
+
+值得一提的是，mountChildFibers与reconcileChildFibers这两个方法的逻辑基本一致。唯一的区别是：reconcileChildFibers会为生成的Fiber节点带上effectTag属性，而mountChildFibers不会。
+
+![beginwork](https://react.iamkasong.com/img/beginWork.png)
+
+## effectTag
+我们知道，render阶段的工作是在内存中进行，当工作结束后会通知Renderer需要执行的DOM操作。要执行DOM操作的具体类型就保存在fiber.effectTag中
+
+```javascript
+// DOM需要插入到页面中
+export const Placement = /*                */ 0b00000000000010;
+// DOM需要更新
+export const Update = /*                   */ 0b00000000000100;
+// DOM需要插入到页面中并更新
+export const PlacementAndUpdate = /*       */ 0b00000000000110;
+// DOM需要删除
+export const Deletion = /*                 */ 0b00000000001000;
+```
+通过二进制表示effectTag，可以方便的使用位操作为fiber.effectTag赋值多个effect。
+
+比如：fiber.effectTag = Placement | Update | Deletion
+表示该fiber需要插入到页面中并更新，并删除。
+
+
+## 插入操作
+1. 我们知道，mount时，fiber.stateNode === null，且在reconcileChildren中调用的mountChildFibers不会为Fiber节点赋值effectTag。那么首屏渲染如何完成呢？
+2. 针对第一个问题，fiber.stateNode会在completeWork中创建。
+3. 第二个问题的答案十分巧妙：假设mountChildFibers也会赋值effectTag，那么可以预见mount时整棵Fiber树所有节点都会有Placement effectTag。那么commit阶段在执行DOM操作时每个节点都会执行一次插入操作，这样大量的DOM操作是极低效的。
+4. 为了解决这个问题，在mount时只有rootFiber会赋值Placement effectTag，在commit阶段只会执行一次插入操作。
