@@ -269,3 +269,18 @@ Render工作的阶段会被称为commit阶段。commit阶段分为三个子阶�
 ### 异步调用effect
 与 componentDidMount、componentDidUpdate 不同的是，在浏览器完成布局与绘制之后，传给 useEffect 的函数会延迟调用。这使得它适用于许多常见的副作用场景，比如设置订阅和事件处理等情况，因此不应在函数中执行阻塞浏览器更新屏幕的操作。useEffect异步执行的原因主要是防止同步执行时阻塞浏览器渲染。
 
+## mutation
+1. commitMutationEffects
+commitMutationEffects会遍历effectList，对每个Fiber节点执行如下三个操作
+
+1. 根据ContentReset effectTag 重置文字节点
+2. 更新ref
+3. 根据effectTag分别处理，其中effectTag包括（Placement ｜ Update ｜ Deletion ｜ Hydrating）
+   a. Placement: 就是插入节点，本质还是调用insertBefore还是appendChild。getHostSibling的执行很耗时，当在同一个Fiber节点下依次执行多个插入操作，getHostSibling会被多次调用，导致性能下降。这是因为Fiber节点不只包括HostComponent, 所以Fiber树和DOM树不是一一对应
+   b. Update: 更新节点，主要是更新props,分FunctionComponent和HostComponent两种情况
+   c. Deletion
+    1. 递归调用Fiber节点及其子孙Fiber节点中fiber.tag为ClassComponent的componentWillUnmount生命周期钩子，从页面移除Fiber节点对应DOM节点
+    2. 解绑ref
+    3. 调度useEffect的销毁函数
+
+
