@@ -283,4 +283,15 @@ commitMutationEffects会遍历effectList，对每个Fiber节点执行如下三�
     2. 解绑ref
     3. 调度useEffect的销毁函数
 
+  ## layout
+  1. 该阶段之所以称为layout，因为该阶段的代码都是在DOM修改完成（mutation阶段完成）后执行的。
+  2. 注意：由于 JS 的同步执行阻塞了主线程，所以此时 JS 已经可以获取到新的DOM，但是浏览器对新的DOM并没有完成渲染。
+  3. 该阶段触发的生命周期钩子和hook可以直接访问到已经改变后的DOM，即该阶段是可以参与DOM layout的阶段。
+
+  1. useLayoutEffect hook从上一次更新的销毁函数调用到本次更新的回调函数调用是同步执行的。
+  2. 而useEffect则需要先调度，在Layout阶段完成后再异步执行。
+  3. 这就是useLayoutEffect与useEffect的区别。
+
+
+
 
